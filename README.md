@@ -1,3 +1,2 @@
-# Escalations Metrics
-How do I even
+# Good Morning
 ![](http://i.imgur.com/SIy6TAH.gif)
