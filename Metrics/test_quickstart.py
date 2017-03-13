@@ -86,35 +86,37 @@ def main():
         #     print('%s, %s' % (row[0], row[4]))
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    def create_dict(values_list):
+def create_dict(values_list):
 
-        utf_values = []
-        for list in values_list:
-            temp_list = []
-            for item in list:
-                temp_list.append(item.encode('utf-8'))
-            utf_values.append(temp_list)
+    utf_values = []
+    for list in values_list:
+        temp_list = []
+        for item in list:
+            temp_list.append(item.encode('utf-8'))
+        utf_values.append(temp_list)
 
-        key_list = []
-        for item in utf_values[0]:
-            key_list.append(item)
+    key_list = []
+    for item in utf_values[0]:
+        key_list.append(item)
 
-        del(utf_values[0])
+    del(utf_values[0])
 
-        parsed_dict = []
-        for list in utf_values:
-            key_index = 0
-            row_dict = {}
-            for item in list:
-                row_dict[key_list[key_index]] = item
-                key_index += 1
-            parsed_dict.append(row_dict)
+    parsed_dict = []
+    for list in utf_values:
+        key_index = 0
+        row_dict = {}
+        for item in list:
+            row_dict[key_list[key_index]] = item
+            key_index += 1
+        parsed_dict.append(row_dict)
 
-        print(parsed_dict)
+    #print(parsed_dict)
 
 
-
+def run():
     values_list = main()
     create_dict(values_list)
+
+run()
