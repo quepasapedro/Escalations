@@ -4,7 +4,7 @@ import csv
 import datetime
 import statistics
 import sys
-import test_quickstart
+import api_caller
 
 def create_datetime(raw_timestamp):
 
@@ -203,5 +203,5 @@ def flags(args, metrics_file):
     #     print("\nWhoops! Didn't recognize your flag. Please type '-h' or '--help' to see flag options.")
 
 args = sys.argv
-raw_file = test_quickstart.run()
+raw_file = api_caller.run()
 flags(args, raw_file)

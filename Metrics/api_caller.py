@@ -39,7 +39,7 @@ def get_credentials():
                                    'sheets.googleapis.com-python-quickstart.json')
 
     store = Storage(credential_path)
-    credentials = store.get() # retrieves credentials from the "store" instance of the "Storage" class pointing at cred_dir
+    credentials = store.get()
 
     # if not credentials or credentials.invalid:
     #     flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
@@ -76,9 +76,6 @@ def main():
         print('No data found.')
     else:
         return values
-        # for row in values:
-        #     # Print columns A and E, which correspond to indices 0 and 4.
-        #     print('%s, %s' % (row[0], row[4]))
 
 
 # if __name__ == '__main__':
@@ -107,8 +104,6 @@ def create_dict(values_list):
             key_index += 1
         parsed_dict.append(row_dict)
 
-    # for row in parsed_dict:
-    #     print(row)
     return parsed_dict
 
 def run():
