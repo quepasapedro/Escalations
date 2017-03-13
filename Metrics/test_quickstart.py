@@ -8,11 +8,11 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+# try:
+#     import argparse
+#     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+# except ImportError:
+#     flags = None
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
@@ -67,15 +67,10 @@ def main():
                               discoveryServiceUrl=discoveryUrl)
 
     spreadsheetId = '1yphtzhkhamAe62O4dgsfecBbVJ3DTnYeBT_LPHj7ZVs'
-    rangeName = 'Sheet1!B:Q'
+    rangeName = 'Sheet1!A:Q'
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', {})
-
-    # values_json = json.dumps(values)
-
-
-
 
     if not values:
         print('No data found.')
@@ -112,11 +107,16 @@ def create_dict(values_list):
             key_index += 1
         parsed_dict.append(row_dict)
 
-    #print(parsed_dict)
-
+    # for row in parsed_dict:
+    #     print(row)
+    return parsed_dict
 
 def run():
     values_list = main()
-    create_dict(values_list)
+
+    final_dict = create_dict(values_list)
+
+    return final_dict
+
 
 run()

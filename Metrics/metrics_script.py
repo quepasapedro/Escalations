@@ -8,24 +8,24 @@ import test_quickstart
 
 def create_datetime(raw_timestamp):
 
-        split_raw = list(raw_timestamp.split())
+    split_raw = list(raw_timestamp.split())
 
-        date_list = list(split_raw[0].split("/"))
+    date_list = list(split_raw[0].split("/"))
 
-        month = int(date_list[0])
-        day = int(date_list[1])
-        year = int(date_list[2])
+    month = int(date_list[0])
+    day = int(date_list[1])
+    year = int(date_list[2])
 
-        time_split = split_raw[1].split(":")
+    time_split = split_raw[1].split(":")
 
-        hour = int(time_split[0])
-        minute = int(time_split[1])
-        second = int(time_split[2])
+    hour = int(time_split[0])
+    minute = int(time_split[1])
+    second = int(time_split[2])
 
-        if split_raw[2] == 'PM' and hour > 12:
-            hour += 12
+    if split_raw[2] == 'PM' and hour > 12:
+        hour += 12
 
-        return year, month, day, hour, minute, second
+    return year, month, day, hour, minute, second
 
 
 def create_reader(metrics_file, args):
@@ -59,24 +59,24 @@ def create_reader(metrics_file, args):
     start_date = dates[0]
     end_date = dates[1]
 
-    with open(metrics_file) as metrics_file:
-        reader = csv.DictReader(metrics_file, delimiter=",")
-        rows = list(reader)
-        return_rows = []
+    # with open(metrics_file) as metrics_file:
+    # reader = csv.DictReader(metrics_file, delimiter=",")
+    rows = list(metrics_file)
+    return_rows = []
 
-        for row in rows:
-            filed_dt = create_datetime(row['FullFiled'])
-            filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
+    for row in rows:
+        filed_dt = create_datetime(row['FullFiled'])
+        filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
 
-            if row['Blob'] == '':
-                continue
+        # if row['Blob'] == '':
+        #     continue
 
-            if filed >= start_date and filed <= end_date:
-                return_rows.append(row)
-            else:
-                continue
+        if filed >= start_date and filed <= end_date:
+            return_rows.append(row)
+        else:
+            continue
 
-        return return_rows
+    return return_rows
 
 
 def agent_counter(metrics_file):
