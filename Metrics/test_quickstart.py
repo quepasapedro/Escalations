@@ -66,8 +66,8 @@ def main():
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
 
-    spreadsheetId = '1yphtzhkhamAe62O4dgsfecBbVJ3DTnYeBT_LPHj7ZVs'
-    rangeName = 'Sheet1!A:Q'
+    spreadsheetId = '1_xbER251owgKHWjFurQ6CSC0rJevP9TSu9-JoOMcbJo'
+    rangeName = 'Tickets!A:Q'
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', {})
