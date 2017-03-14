@@ -28,7 +28,7 @@ def create_datetime(raw_timestamp):
     return year, month, day, hour, minute, second
 
 
-def create_reader(metrics_file, args):
+def create_reader(raw_rows, args):
 
     def date_parse(args):
         if '--date_start' in args:
@@ -55,25 +55,59 @@ def create_reader(metrics_file, args):
 
         return start_date, end_date
 
-    dates = date_parse(args)
-    start_date = dates[0]
-    end_date = dates[1]
+    # dates = date_parse(args)
+    start_date, end_date = date_parse(args)
+    # end_date = dates[1]
 
-    # with open(metrics_file) as metrics_file:
-    # reader = csv.DictReader(metrics_file, delimiter=",")
-    rows = list(metrics_file)
-    return_rows = []
+    # rows = list(metrics_file)
+    # return_rows = []
 
-    for row in rows:
-        filed_dt = create_datetime(row['FullFiled'])
+    # def create_dict(values_list):
+
+    utf_values = []
+    for list in raw_rows:
+        temp_list = []
+        for item in list:
+            temp_list.append(item.encode('utf-8'))
+        utf_values.append(temp_list)
+
+    key_list = []
+    for item in utf_values[0]:
+        key_list.append(item)
+
+    del(utf_values[0])
+
+    parsed_dict = []
+    for list in utf_values:
+        key_index = 0
+        row_dict = {}
+        for item in list:
+            row_dict[key_list[key_index]] = item
+            key_index += 1
+
+        filed_dt = create_datetime(row_dict['FullFiled'])
         filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
 
         if filed >= start_date and filed <= end_date:
-            return_rows.append(row)
+            # return_rows.append(row)
+            parsed_dict.append(row_dict)
         else:
             continue
 
-    return return_rows
+        # parsed_dict.append(row_dict)
+
+    return parsed_dict
+
+    # for row in rows:
+        # filed_dt = create_datetime(row['FullFiled'])
+        # filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
+
+        # if filed >= start_date and filed <= end_date:
+        #     return_rows.append(row)
+        # else:
+        #     continue
+
+    # return return_rows
 
 
 def agent_counter(metrics_file):
@@ -167,9 +201,9 @@ def category_average(metrics_file):
         print("{}: {}".format(item, category_averages[item]))
 
 
-def flags(args, metrics_file):
+def flags(args, raw_file):
 
-    metrics_dict = create_reader(metrics_file, args)
+    metrics_dict = create_reader(raw_file, args)
 
     if "--help" in args or '-h' in args:
         print("\nWelcome to the Escalations Team metrics script.\n"
