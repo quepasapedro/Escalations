@@ -2,7 +2,6 @@ __author__ = 'peterking'
 
 import datetime
 import statistics
-import sys
 import api_caller
 import click
 
@@ -31,9 +30,9 @@ def create_datetime(raw_timestamp):
 def create_reader(raw_rows, start_date, end_date):
 
     utf_values = []
-    for list in raw_rows:
+    for row in raw_rows:
         temp_list = []
-        for item in list:
+        for item in row:
             temp_list.append(item.encode('utf-8'))
         utf_values.append(temp_list)
 
@@ -44,10 +43,10 @@ def create_reader(raw_rows, start_date, end_date):
     del(utf_values[0])
 
     parsed_dict = []
-    for list in utf_values:
+    for row in utf_values:
         key_index = 0
         row_dict = {}
-        for item in list:
+        for item in row:
             row_dict[key_list[key_index]] = item
             key_index += 1
 
@@ -65,9 +64,7 @@ def create_reader(raw_rows, start_date, end_date):
 def agent_counter(metrics_file):
     agent_dict = {}
     for row in metrics_file:
-        if row['Agent'] == '':
-            continue
-        elif row['Agent'] in agent_dict.keys():
+        if row['Agent'] in agent_dict.keys():
             agent_dict[row['Agent']] += 1
         else:
             agent_dict[row['Agent']] = 1
@@ -82,9 +79,7 @@ def agent_counter(metrics_file):
 def author_counter(metrics_file):
     author_dict = {}
     for row in metrics_file:
-        if row['Author'] == '':
-            continue
-        elif row['Author'] in author_dict.keys():
+        if row['Author'] in author_dict.keys():
             author_dict[row['Author']] += 1
         else:
             author_dict[row['Author']] = 1
@@ -99,9 +94,7 @@ def author_counter(metrics_file):
 def category_counter(metrics_file):
     category_dict = {}
     for row in metrics_file:
-        if row['Category'] == '':
-            continue
-        elif row['Category'] in category_dict.keys():
+        if row['Category'] in category_dict.keys():
             category_dict[row['Category']] += 1
         else:
             category_dict[row['Category'].strip()] = 1
@@ -156,60 +149,23 @@ def category_average(metrics_file):
 def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
 
     if date_start:
-        # send create_reader the specified start date
-        # start_date_arg = args[args.index('--date_start') + 1]
         start_date_split = date_start.split("/")
-
         start_date = datetime.datetime(int(start_date_split[2]), int(start_date_split[0]), int(start_date_split[1]))
     else:
-        # send create_reader 01/01/2017
         print("Using 01/01/2016 as the Start Date.")
         start_date = datetime.datetime(2016, 01, 01)
-        # pass
 
     if date_end:
-        # send create_reader the specified end date
-        # end_date_arg = args[args.index('--date_end') + 1]
         end_date_split = date_start.split("/")
-
         end_date = datetime.datetime(int(end_date_split[2]), int(end_date_split[0]), int(end_date_split[1]))
-        # pass
     else:
-        #send create_reader today's date
         print("Using today's date as the End Date.\n")
         end_date_arg = datetime.datetime.today()
 
         end_date = datetime.datetime(end_date_arg.year, end_date_arg.month, end_date_arg.day)
-        # pass
 
-     # def date_parse(args):
-     #        if '--date_start' in args:
-     #
-     #
-     #        elif '--date_start' not in args:
-     #
-     #
-     #        if '--date_end' in args:
-     #
-     #
-     #        elif '--date_end' not in args:
-     #
-     #
-     #        return start_date, end_date
-    # start_date, end_date = date_parse(args)
     metrics_dict = create_reader(raw_file, start_date, end_date)
-    # if "--help" in args or '-h' in args:
-    #     print("\nWelcome to the Escalations Team metrics script.\n"
-    #           "Syntax: 'python metrics_script.py [flags]'.\n\n"
-    #           ""
-    #           "Flag options:\n"
-    #           "Agent Counter: --agent\n"
-    #           "Author Counter: --author\n"
-    #           "Category Counter: --catcount\n"
-    #           "Category Average: --cataverage\n"
-    #           "Start Date ('MM/DD/YYYY'): --date_start\n"
-    #           "End Date ('MM/DD/YYYY'): --date_end\n"
-    #           "Help: --help or -h\n")
+
     if agent:
         agent_counter(metrics_dict)
 
