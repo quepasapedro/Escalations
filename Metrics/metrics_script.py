@@ -4,6 +4,7 @@ import datetime
 import statistics
 import sys
 import api_caller
+import click
 
 def create_datetime(raw_timestamp):
 
@@ -27,34 +28,7 @@ def create_datetime(raw_timestamp):
     return year, month, day, hour, minute, second
 
 
-def create_reader(raw_rows, args):
-
-    def date_parse(args):
-        if '--date_start' in args:
-            start_date_arg = args[args.index('--date_start') + 1]
-            start_date_split = start_date_arg.split("/")
-
-            start_date = datetime.datetime(int(start_date_split[2]), int(start_date_split[0]), int(start_date_split[1]))
-
-        elif '--date_start' not in args:
-            print("Using 01/01/2016 as the Start Date.")
-            start_date = datetime.datetime(2016, 01, 01)
-
-        if '--date_end' in args:
-            end_date_arg = args[args.index('--date_end') + 1]
-            end_date_split = end_date_arg.split("/")
-
-            end_date = datetime.datetime(int(end_date_split[2]), int(end_date_split[0]), int(end_date_split[1]))
-
-        elif '--date_end' not in args:
-            print("Using today's date as the End Date.\n")
-            end_date_arg = datetime.datetime.today()
-
-            end_date = datetime.datetime(end_date_arg.year, end_date_arg.month, end_date_arg.day)
-
-        return start_date, end_date
-
-    start_date, end_date = date_parse(args)
+def create_reader(raw_rows, start_date, end_date):
 
     utf_values = []
     for list in raw_rows:
@@ -80,7 +54,7 @@ def create_reader(raw_rows, args):
         filed_dt = create_datetime(row_dict['FullFiled'])
         filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
 
-        if filed >= start_date and filed <= end_date:
+        if end_date >= filed >= start_date:
             parsed_dict.append(row_dict)
         else:
             continue
@@ -179,38 +153,85 @@ def category_average(metrics_file):
         print("{}: {}".format(item, category_averages[item]))
 
 
-def flags(args, raw_file):
+def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
 
-    metrics_dict = create_reader(raw_file, args)
+    if date_start:
+        # send create_reader the specified start date
+        # start_date_arg = args[args.index('--date_start') + 1]
+        start_date_split = date_start.split("/")
 
-    if "--help" in args or '-h' in args:
-        print("\nWelcome to the Escalations Team metrics script.\n"
-              "Syntax: 'python metrics_script.py [flags]'.\n\n"
-              ""
-              "Flag options:\n"
-              "Agent Counter: --agent\n"
-              "Author Counter: --author\n"
-              "Category Counter: --catcount\n"
-              "Category Average: --cataverage\n"
-              "Start Date ('MM/DD/YYYY'): --date_start\n"
-              "End Date ('MM/DD/YYYY'): --date_end\n"
-              "Help: --help or -h\n")
+        start_date = datetime.datetime(int(start_date_split[2]), int(start_date_split[0]), int(start_date_split[1]))
+    else:
+        # send create_reader 01/01/2017
+        print("Using 01/01/2016 as the Start Date.")
+        start_date = datetime.datetime(2016, 01, 01)
+        # pass
 
-    if '--agent' in args:
+    if date_end:
+        # send create_reader the specified end date
+        # end_date_arg = args[args.index('--date_end') + 1]
+        end_date_split = date_start.split("/")
+
+        end_date = datetime.datetime(int(end_date_split[2]), int(end_date_split[0]), int(end_date_split[1]))
+        # pass
+    else:
+        #send create_reader today's date
+        print("Using today's date as the End Date.\n")
+        end_date_arg = datetime.datetime.today()
+
+        end_date = datetime.datetime(end_date_arg.year, end_date_arg.month, end_date_arg.day)
+        # pass
+
+     # def date_parse(args):
+     #        if '--date_start' in args:
+     #
+     #
+     #        elif '--date_start' not in args:
+     #
+     #
+     #        if '--date_end' in args:
+     #
+     #
+     #        elif '--date_end' not in args:
+     #
+     #
+     #        return start_date, end_date
+    # start_date, end_date = date_parse(args)
+    metrics_dict = create_reader(raw_file, start_date, end_date)
+    # if "--help" in args or '-h' in args:
+    #     print("\nWelcome to the Escalations Team metrics script.\n"
+    #           "Syntax: 'python metrics_script.py [flags]'.\n\n"
+    #           ""
+    #           "Flag options:\n"
+    #           "Agent Counter: --agent\n"
+    #           "Author Counter: --author\n"
+    #           "Category Counter: --catcount\n"
+    #           "Category Average: --cataverage\n"
+    #           "Start Date ('MM/DD/YYYY'): --date_start\n"
+    #           "End Date ('MM/DD/YYYY'): --date_end\n"
+    #           "Help: --help or -h\n")
+    if agent:
         agent_counter(metrics_dict)
 
-    if '--author' in args:
+    if author:
         author_counter(metrics_dict)
 
-    if '--catcount' in args:
+    if catcount:
         category_counter(metrics_dict)
 
-    if '--cataverage' in args:
+    if cataverage:
         category_average(metrics_dict)
 
-    # else:
-    #     print("\nWhoops! Didn't recognize your flag. Please type '-h' or '--help' to see flag options.")
 
-args = sys.argv
-raw_file = api_caller.run()
-flags(args, raw_file)
+@click.command()
+@click.option('--author', help='Author Counter: count tickets filed by CRCS agents.', is_flag=True)
+@click.option('--agent', help='Agent Counter: count tickets answered by Escalations agents.', is_flag=True)
+@click.option('--catcount', help='Category Counter: count tickets in each category.', is_flag=True)
+@click.option('--cataverage', help='Category Average: calculate average time-to-response per category.', is_flag=True)
+@click.option('--date_start', help='Start Date (format: MM/DD/YYY)')
+@click.option('--date_end', help='End Date (format: MM/DD/YYY)')
+def metrics(author, agent, catcount, cataverage, date_start, date_end):
+    raw_file = api_caller.run()
+    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end)
+
+metrics()
