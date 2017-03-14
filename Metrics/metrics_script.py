@@ -1,6 +1,5 @@
 __author__ = 'peterking'
 
-import csv
 import datetime
 import statistics
 import sys
@@ -55,14 +54,7 @@ def create_reader(raw_rows, args):
 
         return start_date, end_date
 
-    # dates = date_parse(args)
     start_date, end_date = date_parse(args)
-    # end_date = dates[1]
-
-    # rows = list(metrics_file)
-    # return_rows = []
-
-    # def create_dict(values_list):
 
     utf_values = []
     for list in raw_rows:
@@ -89,25 +81,11 @@ def create_reader(raw_rows, args):
         filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
 
         if filed >= start_date and filed <= end_date:
-            # return_rows.append(row)
             parsed_dict.append(row_dict)
         else:
             continue
 
-        # parsed_dict.append(row_dict)
-
     return parsed_dict
-
-    # for row in rows:
-        # filed_dt = create_datetime(row['FullFiled'])
-        # filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
-
-        # if filed >= start_date and filed <= end_date:
-        #     return_rows.append(row)
-        # else:
-        #     continue
-
-    # return return_rows
 
 
 def agent_counter(metrics_file):
