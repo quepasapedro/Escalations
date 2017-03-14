@@ -68,9 +68,6 @@ def create_reader(metrics_file, args):
         filed_dt = create_datetime(row['FullFiled'])
         filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
 
-        # if row['Blob'] == '':
-        #     continue
-
         if filed >= start_date and filed <= end_date:
             return_rows.append(row)
         else:
