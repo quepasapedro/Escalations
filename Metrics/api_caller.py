@@ -1,18 +1,9 @@
 from __future__ import print_function
 import httplib2
 import os
-import json
 
 from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
 from oauth2client.file import Storage
-
-# try:
-#     import argparse
-#     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-# except ImportError:
-#     flags = None
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
@@ -52,6 +43,7 @@ def get_credentials():
 
     return credentials
 
+
 def main():
     """Shows basic usage of the Sheets API.
 
@@ -78,40 +70,8 @@ def main():
         return values
 
 
-# if __name__ == '__main__':
-
-# def create_dict(values_list):
-#
-#     utf_values = []
-#     for list in values_list:
-#         temp_list = []
-#         for item in list:
-#             temp_list.append(item.encode('utf-8'))
-#         utf_values.append(temp_list)
-#
-#     key_list = []
-#     for item in utf_values[0]:
-#         key_list.append(item)
-#
-#     del(utf_values[0])
-#
-#     parsed_dict = []
-#     for list in utf_values:
-#         key_index = 0
-#         row_dict = {}
-#         for item in list:
-#             row_dict[key_list[key_index]] = item
-#             key_index += 1
-#         parsed_dict.append(row_dict)
-#
-#     return parsed_dict
-
 def run():
     values_list = main()
-
-    # final_dict = create_dict(values_list)
-
     return values_list
-
 
 run()
