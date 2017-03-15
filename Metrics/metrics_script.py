@@ -147,9 +147,9 @@ def category_average(metrics_file):
 
     return category_averages, catavg_write_list
 
-def write(to_write):
-    api_caller.write(to_write)
-    pass
+def write(to_write, write_range):
+    api_caller.write(to_write, write_range)
+
 
 def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag):
 
@@ -178,7 +178,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
             print("{}: {}".format(key, agent_dict[key]))
 
         if write_flag:
-            write(agent_write)  # add "range" value
+            write_range = "Graphs!A:B"
+            write(agent_write, write_range)  # add "range" value
             pass
 
     if author:
@@ -189,7 +190,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
             print("{}: {}".format(key, author_dict[key]))
 
         if write_flag:
-            write(author_write)  # add "range" value
+            write_range = "Graphs!D:E"
+            write(author_write, write_range)  # add "range" value
 
     if catcount:
         category_dict, category_write = category_counter(metrics_dict)
@@ -199,7 +201,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
             print("{}: {}".format(key, category_dict[key]))
 
         if write_flag:
-            write(category_write)   # add "range" value
+            write_range = "Graphs!G:H"
+            write(category_write, write_range)   # add "range" value
 
     if cataverage:
         category_averages, catavg_write = category_average(metrics_dict)
@@ -209,7 +212,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
             print("{}: {}".format(item, category_averages[item]))
 
         if write_flag:
-            write(catavg_write)  # add "range" value
+            write_range = "Graphs!J:K"
+            write(catavg_write, write_range)  # add "range" value
 
 @click.command()
 @click.option('--author', help='Author Counter: count tickets filed by CRCS agents.', is_flag=True)

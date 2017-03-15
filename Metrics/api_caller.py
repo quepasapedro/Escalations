@@ -68,7 +68,7 @@ def read_main():
         return values
 
 
-def write_main(write_values):  # going to need to pass an argument here
+def write_main(write_values, write_range):  # going to need to pass an argument here
     """Shows basic usage of the Sheets API."""
 
     credentials = get_credentials()
@@ -79,12 +79,9 @@ def write_main(write_values):  # going to need to pass an argument here
                               discoveryServiceUrl=discoveryUrl)
 
     spreadsheetId = '1yphtzhkhamAe62O4dgsfecBbVJ3DTnYeBT_LPHj7ZVs'  # Metrics sheet
-    rangeName = 'Graphs!A:G'  # Will fail; no sheet by that name
+    rangeName = write_range  # Will fail; no sheet by that name
     valueInputOption = 'RAW'
     majorDimension = 'ROWS'
-
-    def parse_values(values_arg):  # parse values argument, write into write-comatible format
-        pass
 
     values = write_values
 
@@ -105,6 +102,6 @@ def read():
     values_list = read_main()
     return values_list
 
-def write(to_write):
-    write_main(to_write)
+def write(to_write, write_range):
+    write_main(to_write, write_range)
     pass
