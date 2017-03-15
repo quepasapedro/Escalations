@@ -31,7 +31,7 @@ def get_credentials():
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir,
-                                   'sheets.googleapis.com-python-quickstart.json')
+                                   'sheets.googleapis.com-python-quickstart.json')  # could rename this
 
     store = Storage(credential_path)
     credentials = store.get()
@@ -41,7 +41,7 @@ def get_credentials():
         flow.user_agent = APPLICATION_NAME
         if flags:
             credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
+        else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run_flow(flow, store)
         print('Storing credentials to ' + credential_path)
 
@@ -60,11 +60,11 @@ def read_main():
 
     spreadsheetId = '1yphtzhkhamAe62O4dgsfecBbVJ3DTnYeBT_LPHj7ZVs'
     rangeName = 'Sheet2!A:C'
-    valueInputOption='RAW'
+    valueInputOption = 'RAW'
 
     values = [
         ["Name", "Age", "Gender"],
-        ["Adam", "24", "Male"],
+        ["Adam", '', "Male"],
         ["Bruce", "27", "Female"],
         ["Chuck", "26", "Male"]]
 
@@ -72,7 +72,7 @@ def read_main():
 
     result = service.spreadsheets().values().update(
         spreadsheetId=spreadsheetId, range=rangeName, valueInputOption=valueInputOption, body=body).execute()
-    values = result.get("updatedData", [])
+    values = result.get("updatedCells", [])
 
     if not values:
         print('No data found.')
@@ -82,5 +82,5 @@ def read_main():
 
 def read():
     values_list = read_main()
-    print(values_list)
+    print("Updated cells: {}".format(values_list))
 read()

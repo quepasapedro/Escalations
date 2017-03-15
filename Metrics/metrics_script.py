@@ -70,11 +70,11 @@ def agent_counter(metrics_file):
         else:
             agent_dict[row['Agent']] = 1
 
-    print("Agent frequencies:")
+    agent_write_list = [['Escalations Agent', 'Ticket Count']]
     for key in agent_dict:
-        print("{}: {}".format(key, agent_dict[key]))
+        agent_write_list.append([key, agent_dict[key]])
 
-    return agent_dict
+    return agent_dict, agent_write_list
 
 
 def author_counter(metrics_file):
@@ -85,11 +85,11 @@ def author_counter(metrics_file):
         else:
             author_dict[row['Author']] = 1
 
-    print("Agent frequencies:")
+    author_write_list = [['Frontend Agent', 'Ticket Count']]
     for key in author_dict:
-        print("{}: {}".format(key, author_dict[key]))
+        author_write_list.append([key, author_dict[key]])
 
-    return author_dict
+    return author_dict, author_write_list
 
 
 def category_counter(metrics_file):
@@ -100,10 +100,11 @@ def category_counter(metrics_file):
         else:
             category_dict[row['Category'].strip()] = 1
 
-    print("Category frequencies:\n")
+    catcount_write_list = [['Category', 'Tickets']]
     for key in category_dict.keys():
-        print("{}: {}".format(key, category_dict[key]))
-    return category_dict
+        catcount_write_list.append([key, category_dict[key]])
+
+    return category_dict, catcount_write_list
 
 
 def category_average(metrics_file):
@@ -137,15 +138,20 @@ def category_average(metrics_file):
             category_sla_dict[row['Category']] = [sla.seconds]
 
     category_averages = {}
-
     for key in category_sla_dict.keys():
         category_averages[key] = statistics.mean(category_sla_dict[key])
 
-    for item in category_averages.keys():
-        print("{}: {}".format(item, category_averages[item]))
+    catavg_write_list = [['Category', 'Average SLA']]
+    for key in category_averages.keys():
+        catavg_write_list.append([key, category_averages[key]])
 
+    return category_averages, catavg_write_list
 
-def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
+def write(to_write):
+    api_caller.write(to_write)
+    pass
+
+def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag):
 
     if date_start:
         start_date_split = date_start.split("/")
@@ -165,17 +171,45 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
     metrics_dict = create_reader(raw_file, start_date, end_date)
 
     if agent:
-        agent_counter(metrics_dict)
+        agent_dict, agent_write = agent_counter(metrics_dict)
+
+        print("Agent frequencies:")
+        for key in agent_dict:
+            print("{}: {}".format(key, agent_dict[key]))
+
+        if write_flag:
+            write(agent_write)  # add "range" value
+            pass
 
     if author:
-        author_counter(metrics_dict)
+        author_dict, author_write = author_counter(metrics_dict)
+
+        print("Agent frequencies:")
+        for key in author_dict:
+            print("{}: {}".format(key, author_dict[key]))
+
+        if write_flag:
+            write(author_write)  # add "range" value
 
     if catcount:
-        category_counter(metrics_dict)
+        category_dict, category_write = category_counter(metrics_dict)
+
+        print("Category frequencies:\n")
+        for key in category_dict.keys():
+            print("{}: {}".format(key, category_dict[key]))
+
+        if write_flag:
+            write(category_write)   # add "range" value
 
     if cataverage:
-        category_average(metrics_dict)
+        category_averages, catavg_write = category_average(metrics_dict)
 
+        print("Category averages:\n")
+        for item in category_averages.keys():
+            print("{}: {}".format(item, category_averages[item]))
+
+        if write_flag:
+            write(catavg_write)  # add "range" value
 
 @click.command()
 @click.option('--author', help='Author Counter: count tickets filed by CRCS agents.', is_flag=True)
@@ -184,8 +218,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
 @click.option('--cataverage', help='Category Average: calculate average time-to-response per category.', is_flag=True)
 @click.option('--date_start', help='Start Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--date_end', help='End Date (format: MM/DD/YYY)', nargs=1)
-def metrics(author, agent, catcount, cataverage, date_start, date_end):
+@click.option('--write_flag', help='Boolean: write to Google Sheets?', is_flag=True)
+def metrics(author, agent, catcount, cataverage, date_start, date_end, write_flag):
     raw_file = api_caller.read()
-    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end)
+    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag)
 
 metrics()
