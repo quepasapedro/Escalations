@@ -44,7 +44,7 @@ def get_credentials():
     return credentials
 
 
-def main():
+def read_main():
     """Shows basic usage of the Sheets API.
 
     Creates a Sheets API service object and prints the names and majors of
@@ -70,7 +70,7 @@ def main():
         return values
 
 
-def run():
-    values_list = main()
+def read():
+    values_list = read_main()
     return values_list
-run()
+read()

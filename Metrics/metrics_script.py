@@ -185,7 +185,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
 @click.option('--date_start', help='Start Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--date_end', help='End Date (format: MM/DD/YYY)', nargs=1)
 def metrics(author, agent, catcount, cataverage, date_start, date_end):
-    raw_file = api_caller.run()
+    raw_file = api_caller.read()
     flags(raw_file, author, agent, catcount, cataverage, date_start, date_end)
 
 metrics()
