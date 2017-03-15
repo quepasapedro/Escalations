@@ -5,6 +5,7 @@ import statistics
 import api_caller
 import click
 
+
 def create_datetime(raw_timestamp):
 
     split_raw = list(raw_timestamp.split())
@@ -110,12 +111,10 @@ def category_average(metrics_file):
     category_sla_dict = {}
 
     def create_time_delta(filed, replied):
-
         filed_dt = datetime.datetime(filed[0], filed[1], filed[2], filed[3], filed[4])
         replied_dt = datetime.datetime(replied[0], replied[1], replied[2], replied[3], replied[4])
 
         sla = replied_dt - filed_dt
-
         return sla
 
     for row in metrics_file:
@@ -161,7 +160,6 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
     else:
         print("Using today's date as the End Date.\n")
         end_date_arg = datetime.datetime.today()
-
         end_date = datetime.datetime(end_date_arg.year, end_date_arg.month, end_date_arg.day)
 
     metrics_dict = create_reader(raw_file, start_date, end_date)
@@ -184,8 +182,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end):
 @click.option('--agent', help='Agent Counter: count tickets answered by Escalations agents.', is_flag=True)
 @click.option('--catcount', help='Category Counter: count tickets in each category.', is_flag=True)
 @click.option('--cataverage', help='Category Average: calculate average time-to-response per category.', is_flag=True)
-@click.option('--date_start', help='Start Date (format: MM/DD/YYY)')
-@click.option('--date_end', help='End Date (format: MM/DD/YYY)')
+@click.option('--date_start', help='Start Date (format: MM/DD/YYY)', nargs=1)
+@click.option('--date_end', help='End Date (format: MM/DD/YYY)', nargs=1)
 def metrics(author, agent, catcount, cataverage, date_start, date_end):
     raw_file = api_caller.run()
     flags(raw_file, author, agent, catcount, cataverage, date_start, date_end)
