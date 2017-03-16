@@ -91,10 +91,14 @@ def author_counter(metrics_file):
         else:
             author_dict[row['Author']] = 1
 
-    author_write_list = [['Frontend Agent', 'Ticket Count']]
+    author_write_list = []
+    header_row = ['Frontend Agent', 'Ticket Count']
     for key in author_dict:
         author_write_list.append([key, author_dict[key]])
 
+    author_write_list = sorted(author_write_list, key=operator.itemgetter(1), reverse=True)
+    author_write_list.insert(0, header_row)
+    print(author_write_list)
     return author_dict, author_write_list
 
 
@@ -106,10 +110,13 @@ def category_counter(metrics_file):
         else:
             category_dict[row['Category'].strip()] = 1
 
-    catcount_write_list = [['Category', 'Tickets']]
+    catcount_write_list = []
+    header_row = ['Category', 'Tickets']
     for key in category_dict.keys():
         catcount_write_list.append([key, category_dict[key]])
 
+    catcount_write_list = sorted(catcount_write_list, key=operator.itemgetter(1), reverse=True)
+    catcount_write_list.insert(0, header_row)
     return category_dict, catcount_write_list
 
 
@@ -145,12 +152,16 @@ def category_average(metrics_file):
 
     category_averages = {}
     for key in category_sla_dict.keys():
-        category_averages[key] = statistics.mean(category_sla_dict[key])
+        category_averages[key] = (statistics.mean(category_sla_dict[key])/60.0)
 
-    catavg_write_list = [['Category', 'Average SLA']]
+
+    catavg_write_list = []
+    header_row = ['Category', 'Average SLA']
     for key in category_averages.keys():
         catavg_write_list.append([key, category_averages[key]])
 
+    catavg_write_list = sorted(catavg_write_list, key=operator.itemgetter(1), reverse=True)
+    catavg_write_list.insert(0, header_row)
     return category_averages, catavg_write_list
 
 
