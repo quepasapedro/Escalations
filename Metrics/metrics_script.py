@@ -4,6 +4,7 @@ import datetime
 import statistics
 import api_caller
 import click
+import operator
 
 
 def create_datetime(raw_timestamp):
@@ -70,10 +71,15 @@ def agent_counter(metrics_file):
         else:
             agent_dict[row['Agent']] = 1
 
-    agent_write_list = [['Escalations Agent', 'Ticket Count']]
+    agent_write_list = []
+    header_row = ['Escalations Agent', 'Ticket Count']
     for key in agent_dict:
         agent_write_list.append([key, agent_dict[key]])
 
+    agent_write_list = sorted(agent_write_list, key=operator.itemgetter(1), reverse=True)
+    agent_write_list.insert(0, header_row)
+
+    print(agent_write_list)
     return agent_dict, agent_write_list
 
 
@@ -147,6 +153,7 @@ def category_average(metrics_file):
 
     return category_averages, catavg_write_list
 
+
 def write(to_write, write_range):
     api_caller.write(to_write, write_range)
 
@@ -185,9 +192,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
     if author:
         author_dict, author_write = author_counter(metrics_dict)
 
-        print("Agent frequencies:")
-        for key in author_dict:
-            print("{}: {}".format(key, author_dict[key]))
+        # print("Agent frequencies:")
+        # for key in author_dict:
+        #     print("{}: {}".format(key, author_dict[key]))
 
         if write_flag:
             write_range = "Graphs!D:E"
@@ -196,9 +203,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
     if catcount:
         category_dict, category_write = category_counter(metrics_dict)
 
-        print("Category frequencies:\n")
-        for key in category_dict.keys():
-            print("{}: {}".format(key, category_dict[key]))
+        # print("Category frequencies:\n")
+        # for key in category_dict.keys():
+        #     print("{}: {}".format(key, category_dict[key]))
 
         if write_flag:
             write_range = "Graphs!G:H"
@@ -207,9 +214,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
     if cataverage:
         category_averages, catavg_write = category_average(metrics_dict)
 
-        print("Category averages:\n")
-        for item in category_averages.keys():
-            print("{}: {}".format(item, category_averages[item]))
+        # print("Category averages:\n")
+        # for item in category_averages.keys():
+        #     print("{}: {}".format(item, category_averages[item]))
 
         if write_flag:
             write_range = "Graphs!J:K"
