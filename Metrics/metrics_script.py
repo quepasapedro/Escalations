@@ -79,7 +79,7 @@ def agent_counter(metrics_file):
     agent_write_list = sorted(agent_write_list, key=operator.itemgetter(1), reverse=True)
     agent_write_list.insert(0, header_row)
 
-    print(agent_write_list)
+    # print(agent_write_list)
     return agent_dict, agent_write_list
 
 
@@ -191,9 +191,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
     if agent:
         agent_dict, agent_write = agent_counter(metrics_dict)
 
-        print("Agent frequencies:")
-        for key in agent_dict:
-            print("{}: {}".format(key, agent_dict[key]))
+        # print("Agent frequencies:")
+        # for row in agent_write:
+        #     print("{}: {}".format(row[0], row[1]))
 
         if write_flag:
             write_range = "Graphs!A:B"

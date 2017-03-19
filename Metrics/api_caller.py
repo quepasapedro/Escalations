@@ -89,11 +89,12 @@ def write_main(write_values, write_range):  # going to need to pass an argument 
 
     result = service.spreadsheets().values().update(
         spreadsheetId=spreadsheetId, range=rangeName, valueInputOption=valueInputOption, body=body).execute()
-    values = result.get("updatedCells", [])
+    values = result.get("updatedRows", [])
 
     if not values:
         print('No data found.')
     else:
+        print("\nUpdated {} rows.".format(values))
         return values
         # pass
 
