@@ -165,25 +165,55 @@ def category_average(metrics_file):
     return category_averages, catavg_write_list
 
 
-def weeks(start_date, num_weeks):
+def find_weeks(start_date):
     # if 6 > start_date.weekday() > 0:
     week_start_day = start_date.day - start_date.weekday()
+    # print(week_start_day)
     week_start = datetime.date(start_date.year, start_date.month, week_start_day)
-    week_end = week_start + datetime.timedelta(days=7)
+    week_end = week_start + datetime.timedelta(days=6)
 
+    print(week_start, week_end)
     return week_start, week_end
 
 
-def week_trends(metrics_file, start_date, end_date, num_weeks):
-    
-    pass
+def week_trends(metrics_file, date_start, end_date, num_weeks):
+    week_list = []
+    i = 0
+    while i < num_weeks:
+        year, month, day = [int(chunk.strip()) for chunk in date_start.split("/")]
+        start_date = datetime.datetime(year, month, day)
+        start, end = find_weeks(start_date)
+        week_list.append([start, end])
+
+        start_date = end + datetime.timedelta(days=1)
+        i += 1
+
+    week_trend_list = {}
+    for row in metrics_file:
+        filed_dt = create_datetime(row['FullFiled'])
+        filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
+
+        for week in week_list:
+            if start <= filed <= end:
+                if week_trend_list[week_list.index(week)] in week_trend_list.keys():
+                    week_trend_list[week_list.index(week)] += 1
+                else:
+                    week_trend_list[week_list.index(week)] = 1
+            else:
+                continue
+
+    print(week_trend_list)
+
+
+    #  return week_trend_list -> [{'week_num':INT, 'week_range': 'mm/dd/yyyy - mm/dd/yyyy', 'count':INT}, ... ]
+
 
 
 def write(to_write, write_range):
     api_caller.write(to_write, write_range)
 
 
-def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag):
+def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks):
 
     if date_start:
         start_date_split = date_start.split("/")
@@ -205,9 +235,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
     if agent:
         agent_dict, agent_write = agent_counter(metrics_dict)
 
-        # print("Agent frequencies:")
-        # for row in agent_write:
-        #     print("{}: {}".format(row[0], row[1]))
+        print("Agent frequencies:")
+        for row in agent_write:
+            print("{}: {}".format(row[0], row[1]))
 
         if write_flag:
             write_range = "Graphs!A:B"
@@ -247,16 +277,23 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
             write_range = "Graphs!J:K"
             write(catavg_write, write_range)  # add "range" value
 
+    if weeks:
+        # call week_trends to calculate weekly contact numbers
+        #
+        week_trends(metrics_dict, start_date, end_date, weeks)
+
 @click.command()
 @click.option('--author', help='Author Counter: count tickets filed by CRCS agents.', is_flag=True)
 @click.option('--agent', help='Agent Counter: count tickets answered by Escalations agents.', is_flag=True)
 @click.option('--catcount', help='Category Counter: count tickets in each category.', is_flag=True)
 @click.option('--cataverage', help='Category Average: calculate average time-to-response per category.', is_flag=True)
+@click.option('--weeks', help='Calculate week-over-week contact numbers? Requires INT '
+                                    'for number of weeks to calculate.', nargs=1)
 @click.option('--date_start', help='Start Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--date_end', help='End Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--write_flag', help='Boolean: write to Google Sheets?', is_flag=True)
-def metrics(author, agent, catcount, cataverage, date_start, date_end, write_flag):
+def metrics(author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks):
     raw_file = api_caller.read()
-    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag)
+    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks)
 
 metrics()
