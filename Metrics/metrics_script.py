@@ -53,7 +53,7 @@ def create_reader(raw_rows, start_date, end_date):
             key_index += 1
 
         filed_dt = create_datetime(row_dict['FullFiled'])
-        filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
+        filed = datetime.date(filed_dt[0], filed_dt[1], filed_dt[2])
 
         if end_date >= filed >= start_date:
             parsed_dict.append(row_dict)
@@ -166,19 +166,17 @@ def category_average(metrics_file):
 
 
 def find_weeks(start_date):
-    # if 6 > start_date.weekday() > 0:
     week_start_day = start_date.day - start_date.weekday()
-    # print(week_start_day)
     week_start = datetime.date(start_date.year, start_date.month, week_start_day)
     week_end = week_start + datetime.timedelta(days=6)
 
-    # print(week_start, week_end)
     return week_start, week_end
 
 
 def week_trends(metrics_file, start_date, end_date, num_weeks):
     week_list = []
     i = 0
+
     while i < num_weeks:
         # year, month, day = [int(chunk.strip()) for chunk in date_start.split("/")]
         # start_date = datetime.datetime(year, month, day)
@@ -187,18 +185,19 @@ def week_trends(metrics_file, start_date, end_date, num_weeks):
         # print(week_list)
         start_date = end + datetime.timedelta(days=1)
         i += 1
+    print(week_list)
 
     week_trend_list = {}
     for row in metrics_file:
         filed_dt = create_datetime(row['FullFiled'])
-        filed = datetime.datetime(filed_dt[0], filed_dt[1], filed_dt[2])
+        filed = datetime.date(filed_dt[0], filed_dt[1], filed_dt[2])
 
         for week in week_list:
-            if start <= filed <= end:
-                if week_trend_list[week_list.index(week)] in week_trend_list.keys():
-                    week_trend_list[week_list.index(week)] += 1
-                else:
+            if week[0] <= filed <= week[1]:
+                if week_list.index(week) not in week_trend_list.keys():
                     week_trend_list[week_list.index(week)] = 1
+                else:
+                    week_trend_list[week_list.index(week)] += 1
             else:
                 continue
 
@@ -217,18 +216,18 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
 
     if date_start:
         start_date_split = date_start.split("/")
-        start_date = datetime.datetime(int(start_date_split[2]), int(start_date_split[0]), int(start_date_split[1]))
+        start_date = datetime.date(int(start_date_split[2]), int(start_date_split[0]), int(start_date_split[1]))
     else:
         print("Using 01/01/2016 as the Start Date.")
-        start_date = datetime.datetime(2016, 01, 01)
+        start_date = datetime.date(2016, 01, 01)
 
     if date_end:
         end_date_split = date_start.split("/")
-        end_date = datetime.datetime(int(end_date_split[2]), int(end_date_split[0]), int(end_date_split[1]))
+        end_date = datetime.date(int(end_date_split[2]), int(end_date_split[0]), int(end_date_split[1]))
     else:
         print("Using today's date as the End Date.\n")
         end_date_arg = datetime.datetime.today()
-        end_date = datetime.datetime(end_date_arg.year, end_date_arg.month, end_date_arg.day)
+        end_date = datetime.date(end_date_arg.year, end_date_arg.month, end_date_arg.day)
 
     metrics_dict = create_reader(raw_file, start_date, end_date)
 
@@ -279,7 +278,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
 
     if weeks:
         # call week_trends to calculate weekly contact numbers
-        #
+
         week_trends(metrics_dict, start_date, end_date, weeks)
 
 @click.command()
@@ -288,7 +287,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
 @click.option('--catcount', help='Category Counter: count tickets in each category.', is_flag=True)
 @click.option('--cataverage', help='Category Average: calculate average time-to-response per category.', is_flag=True)
 @click.option('--weeks', help='Calculate week-over-week contact numbers? Requires INT '
-                                    'for number of weeks to calculate.', nargs=1)
+                                    'for number of weeks to calculate.', nargs=1, type=int)
 @click.option('--date_start', help='Start Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--date_end', help='End Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--write_flag', help='Boolean: write to Google Sheets?', is_flag=True)

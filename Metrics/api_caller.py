@@ -105,4 +105,3 @@ def read():
 
 def write(to_write, write_range):
     write_main(to_write, write_range)
-    pass
