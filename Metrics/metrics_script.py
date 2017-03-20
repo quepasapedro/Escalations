@@ -165,6 +165,20 @@ def category_average(metrics_file):
     return category_averages, catavg_write_list
 
 
+def weeks(start_date, num_weeks):
+    # if 6 > start_date.weekday() > 0:
+    week_start_day = start_date.day - start_date.weekday()
+    week_start = datetime.date(start_date.year, start_date.month, week_start_day)
+    week_end = week_start + datetime.timedelta(days=7)
+
+    return week_start, week_end
+
+
+def week_trends(metrics_file, start_date, end_date, num_weeks):
+    
+    pass
+
+
 def write(to_write, write_range):
     api_caller.write(to_write, write_range)
 
