@@ -172,19 +172,19 @@ def find_weeks(start_date):
     week_start = datetime.date(start_date.year, start_date.month, week_start_day)
     week_end = week_start + datetime.timedelta(days=6)
 
-    print(week_start, week_end)
+    # print(week_start, week_end)
     return week_start, week_end
 
 
-def week_trends(metrics_file, date_start, end_date, num_weeks):
+def week_trends(metrics_file, start_date, end_date, num_weeks):
     week_list = []
     i = 0
     while i < num_weeks:
-        year, month, day = [int(chunk.strip()) for chunk in date_start.split("/")]
-        start_date = datetime.datetime(year, month, day)
+        # year, month, day = [int(chunk.strip()) for chunk in date_start.split("/")]
+        # start_date = datetime.datetime(year, month, day)
         start, end = find_weeks(start_date)
         week_list.append([start, end])
-
+        # print(week_list)
         start_date = end + datetime.timedelta(days=1)
         i += 1
 
