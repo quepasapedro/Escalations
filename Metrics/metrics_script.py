@@ -253,7 +253,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
             print("{}: {}".format(row[0], row[1]))
 
         if write_flag:
-            write_range = "Graphs!A:B"
+            write_range = "Data!A:B"
             write(agent_write, write_range)
             pass
 
@@ -265,7 +265,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
         #     print("{}: {}".format(key, author_dict[key]))
 
         if write_flag:
-            write_range = "Graphs!H:I"
+            write_range = "Data!H:I"
             write(author_write, write_range)
 
     if catcount:
@@ -276,7 +276,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
         #     print("{}: {}".format(key, category_dict[key]))
 
         if write_flag:
-            write_range = "Graphs!K:L"
+            write_range = "Data!K:L"
             write(category_write, write_range)
 
     if cataverage:
@@ -287,13 +287,13 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
         #     print("{}: {}".format(item, category_averages[item]))
 
         if write_flag:
-            write_range = "Graphs!N:O"
+            write_range = "Data!N:O"
             write(catavg_write, write_range)
 
     if weeks:
         weeks_write = week_trends(metrics_dict, start_date, end_date, weeks)
         if write_flag:
-            write_range = "Graphs!D:F"
+            write_range = "Data!D:F"
             write(weeks_write, write_range)
 
     if catcheck:
