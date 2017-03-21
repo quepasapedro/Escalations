@@ -218,9 +218,18 @@ def category_check(metrics_file):
                    'Clownshoes/Checks', 'Demographics', 'iOS', 'Migration', 'Nacho/External Accounts',
                    'Onboarding/CIP', 'Payments/ACH', 'Risk/Blocked', 'Roo', 'Service Interruptions',
                    'Shared', 'Sign In/Passphrase Reset','Third Party Services', 'Tools','Transactions']
+    invalids = []
     for row in metrics_file:
         if row['Category'] not in categories:
-            print("{}: {}".format(row['Chili'], row['Category']))
+            invalids.append([row['Chili'], row['Category']])
+        else:
+            continue
+    if len(invalids) > 0:
+        for item in invalids:
+            print("Validation errors found:\n{}: {}".format(item[0], item[1]))
+    else:
+        print("No validation errors found.")
+
 
 def write(to_write, write_range):
     api_caller.write(to_write, write_range)
