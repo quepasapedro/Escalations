@@ -166,7 +166,7 @@ def category_average(metrics_file):
 
 
 def find_weeks(start_date):
-    week_start_day = start_date.day - start_date.weekday()
+    week_start_day = start_date.day - start_date.weekday()  # add logic here to accommodate passing an end date instead
     week_start = datetime.date(start_date.year, start_date.month, week_start_day)
     week_end = week_start + datetime.timedelta(days=6)
 
@@ -174,15 +174,12 @@ def find_weeks(start_date):
 
 
 def week_trends(metrics_file, start_date, end_date, num_weeks):
+
     week_list = []
     i = 0
-
     while i < num_weeks:
-        # year, month, day = [int(chunk.strip()) for chunk in date_start.split("/")]
-        # start_date = datetime.datetime(year, month, day)
         start, end = find_weeks(start_date)
         week_list.append([start, end])
-        # print(week_list)
         start_date = end + datetime.timedelta(days=1)
         i += 1
     print(week_list)
@@ -201,18 +198,30 @@ def week_trends(metrics_file, start_date, end_date, num_weeks):
             else:
                 continue
 
-    print(week_trend_list)
+    header = ['Week Range', 'Category ']
+
+    week_write_list = []
+    for week in week_trend_list:
+        one_week = []
+        one_week.append(week[0].isoformat())
+        one_week.append(week[1].isoformat())
+        one_week.append(week_trend_list[week])
+        week_write_list.append(one_week)
+
+    print(week_write_list)
+    # print(week_trend_list)
 
 
     #  return week_trend_list -> [{'week_num':INT, 'week_range': 'mm/dd/yyyy - mm/dd/yyyy', 'count':INT}, ... ]
 
 
 def category_check(metrics_file):
+    categories = ['Android', 'Balance Discrepancy', 'C2C', 'Card Issues', 'Cheddar/Goals',
+                   'Clownshoes/Checks', 'Demographics', 'iOS', 'Migration', 'Nacho/External Accounts',
+                   'Onboarding/CIP', 'Payments/ACH', 'Risk/Blocked', 'Roo', 'Service Interruptions',
+                   'Shared', 'Sign In/Passphrase Reset','Third Party Services', 'Tools','Transactions']
     for row in metrics_file:
-        if row['Category'] not in ['Android', 'Balance Discrepancy', 'C2C', 'Card Issues', 'Cheddar/Goals',
-                                   'Clownshoes/Checks', 'Demographics', 'iOS', 'Migration', 'Nacho/External Accounts',
-                                   'Onboarding/CIP', 'Payments/ACH', 'Risk/Blocked', 'Roo', 'Service Interruptions',
-                                   'Shared', 'Sign In/Passphrase Reset','Third Party Services', 'Tools','Transactions']:
+        if row['Category'] not in categories:
             print("{}: {}".format(row['Chili'], row['Category']))
 
 def write(to_write, write_range):
