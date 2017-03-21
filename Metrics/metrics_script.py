@@ -182,7 +182,7 @@ def week_trends(metrics_file, start_date, end_date, num_weeks):
         week_list.append([start, end])
         start_date = end + datetime.timedelta(days=1)
         i += 1
-    print(week_list)
+    # print(week_list)
 
     week_trend_list = {}
     for row in metrics_file:
@@ -198,21 +198,19 @@ def week_trends(metrics_file, start_date, end_date, num_weeks):
             else:
                 continue
 
-    header = ['Week Range', 'Category ']
+    header = ['Week Start', 'Week End', 'Ticket Count']
 
     week_write_list = []
-    for week in week_trend_list:
+    for key in week_trend_list.keys():
         one_week = []
-        one_week.append(week[0].isoformat())
-        one_week.append(week[1].isoformat())
-        one_week.append(week_trend_list[week])
+        one_week.append(week_list[key][0].isoformat())
+        one_week.append(week_list[key][1].isoformat())
+        one_week.append(week_trend_list[key])
         week_write_list.append(one_week)
 
-    print(week_write_list)
-    # print(week_trend_list)
+    week_write_list.insert(0, header)
 
-
-    #  return week_trend_list -> [{'week_num':INT, 'week_range': 'mm/dd/yyyy - mm/dd/yyyy', 'count':INT}, ... ]
+    return week_write_list
 
 
 def category_check(metrics_file):
@@ -256,7 +254,7 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
 
         if write_flag:
             write_range = "Graphs!A:B"
-            write(agent_write, write_range)  # add "range" value
+            write(agent_write, write_range)
             pass
 
     if author:
@@ -267,8 +265,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
         #     print("{}: {}".format(key, author_dict[key]))
 
         if write_flag:
-            write_range = "Graphs!D:E"
-            write(author_write, write_range)  # add "range" value
+            write_range = "Graphs!H:I"
+            write(author_write, write_range)
 
     if catcount:
         category_dict, category_write = category_counter(metrics_dict)
@@ -278,8 +276,8 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
         #     print("{}: {}".format(key, category_dict[key]))
 
         if write_flag:
-            write_range = "Graphs!G:H"
-            write(category_write, write_range)   # add "range" value
+            write_range = "Graphs!K:L"
+            write(category_write, write_range)
 
     if cataverage:
         category_averages, catavg_write = category_average(metrics_dict)
@@ -289,13 +287,14 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
         #     print("{}: {}".format(item, category_averages[item]))
 
         if write_flag:
-            write_range = "Graphs!J:K"
-            write(catavg_write, write_range)  # add "range" value
+            write_range = "Graphs!N:O"
+            write(catavg_write, write_range)
 
     if weeks:
-        # call week_trends to calculate weekly contact numbers
-
-        week_trends(metrics_dict, start_date, end_date, weeks)
+        weeks_write = week_trends(metrics_dict, start_date, end_date, weeks)
+        if write_flag:
+            write_range = "Graphs!D:F"
+            write(weeks_write, write_range)
 
     if catcheck:
         category_check(metrics_dict)
