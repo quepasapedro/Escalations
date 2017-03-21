@@ -207,12 +207,19 @@ def week_trends(metrics_file, start_date, end_date, num_weeks):
     #  return week_trend_list -> [{'week_num':INT, 'week_range': 'mm/dd/yyyy - mm/dd/yyyy', 'count':INT}, ... ]
 
 
+def category_check(metrics_file):
+    for row in metrics_file:
+        if row['Category'] not in ['Android', 'Balance Discrepancy', 'C2C', 'Card Issues', 'Cheddar/Goals',
+                                   'Clownshoes/Checks', 'Demographics', 'iOS', 'Migration', 'Nacho/External Accounts',
+                                   'Onboarding/CIP', 'Payments/ACH', 'Risk/Blocked', 'Roo', 'Service Interruptions',
+                                   'Shared', 'Sign In/Passphrase Reset','Third Party Services', 'Tools','Transactions']:
+            print("{}: {}".format(row['Chili'], row['Category']))
 
 def write(to_write, write_range):
     api_caller.write(to_write, write_range)
 
 
-def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks):
+def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks, catcheck):
 
     if date_start:
         start_date_split = date_start.split("/")
@@ -281,6 +288,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
 
         week_trends(metrics_dict, start_date, end_date, weeks)
 
+    if catcheck:
+        category_check(metrics_dict)
+
 @click.command()
 @click.option('--author', help='Author Counter: count tickets filed by CRCS agents.', is_flag=True)
 @click.option('--agent', help='Agent Counter: count tickets answered by Escalations agents.', is_flag=True)
@@ -291,8 +301,9 @@ def flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, w
 @click.option('--date_start', help='Start Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--date_end', help='End Date (format: MM/DD/YYY)', nargs=1)
 @click.option('--write_flag', help='Boolean: write to Google Sheets?', is_flag=True)
-def metrics(author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks):
+@click.option('--catcheck', help='Check validation for categories. Prints non-matches.', is_flag=True)
+def metrics(author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks, catcheck):
     raw_file = api_caller.read()
-    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks)
+    flags(raw_file, author, agent, catcount, cataverage, date_start, date_end, write_flag, weeks, catcheck)
 
 metrics()
